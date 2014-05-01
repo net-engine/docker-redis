@@ -1,4 +1,4 @@
-docker-redis
-============
+docker-base
+===========
 
-Dockerfile for NE Redis container
+Base docker image for NE containers

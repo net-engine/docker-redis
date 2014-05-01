@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /sbin/setuser netengine /usr/bin/redis-server /etc/redis/redis.conf

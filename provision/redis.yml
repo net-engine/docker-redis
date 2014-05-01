@@ -1,0 +1,48 @@
+-
+  hosts: local
+  connection: local
+  sudo: yes
+  vars:
+    redis_version: 2.8.9
+  tasks:
+    - name: Install required apt packages for redis
+      apt: pkg={{ item }} state=latest
+      with_items:
+        - build-essential
+        - tcl8.5
+
+    - name: Make a /redis directory
+      file: path=/redis state=directory
+
+    - name: Pull down Redis tarball
+      get_url: url="http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz" dest=/redis/redis.tar.gz
+      register: get_url_result
+
+    - name: Un-tar the download
+      shell: tar -xvf /redis/redis.tar.gz chdir=/redis
+      when: get_url_result.changed
+
+    - name: Compile from source
+      shell: make chdir="/redis/redis-{{ redis_version }}"
+      when: get_url_result.changed
+
+    - name: Copy executables to /usr/bin
+      copy: src="/redis/redis-{{ redis_version }}/src/{{ item }}" dest="/usr/bin/{{ item }}" owner=root group=root mode=0555
+      with_items:
+        - redis-server
+        - redis-cli
+        - redis-check-dump
+        - redis-check-aof
+        - redis-benchmark
+
+    - name: Make /etc/redis directory
+      file: state=directory path=/etc/redis owner=root group=root
+
+    - name: Copy redis config
+      copy: src=/provision/files/redis.conf dest=/etc/redis/redis.conf owner=root group=root
+
+    - name: Add service folder for redis
+      file: state=directory path=/etc/service/redis owner=root group=root
+
+    - name: Copy redis init script
+      copy: src=/provision/files/run dest=/etc/service/redis/run owner=root group=root mode=0555
