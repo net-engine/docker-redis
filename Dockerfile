@@ -1,4 +1,4 @@
-FROM netengine/base
+FROM docker.netengine.com.au:443/base:0.0.2
 MAINTAINER team@netengine.com.au
 
 # Configure redis
