@@ -46,3 +46,10 @@
 
     - name: Copy redis init script
       copy: src=/provision/files/run dest=/etc/service/redis/run owner=root group=root mode=0555
+
+    - name: Add consul service definition for redis
+      copy: >
+        src=/provision/files/redis_service.json
+        dest=/consul/config/redis_service.json
+        owner=netengine
+        group=netengine
